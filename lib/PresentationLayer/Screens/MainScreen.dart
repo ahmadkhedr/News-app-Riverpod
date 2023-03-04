@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:news_riverpod_app/Providers/NewsProvider.dart';
 
+import '../../DataLayer/Models/NewsModel.dart';
+
 class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
 
@@ -20,26 +22,7 @@ class MainScreen extends ConsumerWidget {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: ((context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      padding: EdgeInsets.all(15.0),
-                      decoration:
-                          BoxDecoration(border: Border.all(color: Colors.grey)),
-                      child: Center(
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: Container(
-                                    child: Text(
-                              data.articles![index].title!,
-                              textAlign: TextAlign.right,
-                            ))),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
+                  return NewsItem(data.articles![index]);
                 }),
               ),
               error: (error, stackTrace) => Text("Error"),
@@ -56,6 +39,31 @@ class MainScreen extends ConsumerWidget {
                   child: Text("MainScreen")),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget NewsItem(Article item) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: InkWell(
+        onTap: (() => print(item.source!.name!)),
+        child: Container(
+          padding: EdgeInsets.all(15.0),
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+          child: Center(
+            child: Row(
+              children: [
+                Expanded(
+                    child: Container(
+                        child: Text(
+                  item.title!,
+                  textAlign: TextAlign.right,
+                ))),
+              ],
+            ),
+          ),
         ),
       ),
     );
