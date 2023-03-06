@@ -2,120 +2,50 @@
 //
 //     final newsModel = newsModelFromJson(jsonString);
 
+import 'package:meta/meta.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'dart:convert';
+
+part 'NewsModel.freezed.dart';
+part 'NewsModel.g.dart';
 
 NewsModel newsModelFromJson(String str) => NewsModel.fromJson(json.decode(str));
 
 String newsModelToJson(NewsModel data) => json.encode(data.toJson());
 
-class NewsModel {
-    NewsModel({
-        this.status,
-        this.totalResults,
-        this.articles,
-    });
+@freezed
+class NewsModel with _$NewsModel {
+    const factory NewsModel({
+        required String status,
+        required int totalResults,
+        required List<Article> articles,
+    }) = _NewsModel;
 
-    String? status;
-    int? totalResults;
-    List<Article>? articles;
-
-    factory NewsModel.fromJson(Map<String, dynamic> json) => NewsModel(
-        status: json["status"],
-        totalResults: json["totalResults"],
-        articles: json["articles"] == null ? [] : List<Article>.from(json["articles"]!.map((x) => Article.fromJson(x))),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "status": status,
-        "totalResults": totalResults,
-        "articles": articles == null ? [] : List<dynamic>.from(articles!.map((x) => x.toJson())),
-    };
+    factory NewsModel.fromJson(Map<String, dynamic> json) => _$NewsModelFromJson(json);
 }
 
-class Article {
-    Article({
-        this.source,
-        this.author,
-        this.title,
-        this.description,
-        this.url,
-        this.urlToImage,
-        this.publishedAt,
-        this.content,
-    });
+@freezed
+class Article with _$Article {
+    const factory Article({
+        required Source source,
+        required String author,
+        required String title,
+        required dynamic description,
+        required String url,
+        required dynamic urlToImage,
+        required String publishedAt,
+        required dynamic content,
+    }) = _Article;
 
-    Source? source;
-    String? author;
-    String? title;
-    dynamic description;
-    String? url;
-    dynamic urlToImage;
-    DateTime? publishedAt;
-    dynamic content;
-
-    factory Article.fromJson(Map<String, dynamic> json) => Article(
-        source: json["source"] == null ? null : Source.fromJson(json["source"]),
-        author: json["author"],
-        title: json["title"],
-        description: json["description"],
-        url: json["url"],
-        urlToImage: json["urlToImage"],
-        publishedAt: json["publishedAt"] == null ? null : DateTime.parse(json["publishedAt"]),
-        content: json["content"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "source": source?.toJson(),
-        "author": author,
-        "title": title,
-        "description": description,
-        "url": url,
-        "urlToImage": urlToImage,
-        "publishedAt": publishedAt?.toIso8601String(),
-        "content": content,
-    };
+    factory Article.fromJson(Map<String, dynamic> json) => _$ArticleFromJson(json);
 }
 
-class Source {
-    Source({
-        this.id,
-        this.name,
-    });
+@freezed
+class Source with _$Source {
+    const factory Source({
+        required String id,
+        required String name,
+    }) = _Source;
 
-    Id? id;
-    Name? name;
-
-    factory Source.fromJson(Map<String, dynamic> json) => Source(
-        id: idValues.map[json["id"]]!,
-        name: nameValues.map[json["name"]]!,
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": idValues.reverse[id],
-        "name": nameValues.reverse[name],
-    };
-}
-
-enum Id { GOOGLE_NEWS }
-
-final idValues = EnumValues({
-    "google-news": Id.GOOGLE_NEWS
-});
-
-enum Name { GOOGLE_NEWS }
-
-final nameValues = EnumValues({
-    "Google News": Name.GOOGLE_NEWS
-});
-
-class EnumValues<T> {
-    Map<String, T> map;
-    late Map<T, String> reverseMap;
-
-    EnumValues(this.map);
-
-    Map<T, String> get reverse {
-        reverseMap = map.map((k, v) => MapEntry(v, k));
-        return reverseMap;
-    }
+    factory Source.fromJson(Map<String, dynamic> json) => _$SourceFromJson(json);
 }

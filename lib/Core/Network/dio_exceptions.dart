@@ -24,10 +24,10 @@ class DioExceptions implements Exception {
         message = "Send timeout in connection with API server";
         break;
       case DioErrorType.other:
-        if (dioError.message!.contains("SocketException")) {
+        if (dioError.message.contains("SocketException")) {
           message = 'No Internet';
           break;
-        } else if (dioError.message!.contains('HandshakeException')) {
+        } else if (dioError.message.contains('HandshakeException')) {
           message = 'Response data not found';
           break;
         }

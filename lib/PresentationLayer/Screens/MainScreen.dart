@@ -9,7 +9,11 @@ class MainScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final data = ref.watch(newsStateNotifierProvider);
+    AsyncValue<NewsModel> data = ref.watch(controllerNewsProvider);
+    // ref.listen(controllerNewsProvider, (prev, next) {
+    //   ScaffoldMessenger.of(context)
+    //       .showSnackBar(const SnackBar(content: Text('yoyo')));
+    // });
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -18,25 +22,45 @@ class MainScreen extends ConsumerWidget {
           children: [
             data.when(
               data: (data) => ListView.builder(
-                itemCount: data.articles!.length,
+                itemCount: data.articles.length,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: ((context, index) {
-                  return NewsItem(data.articles![index]);
+                  return newsItem(data.articles[index]);
+
+                  //  Row(
+                  //   children: [
+                  //     // IconButton(
+                  //     //   icon: const Icon(Icons.remove),
+                  //     //   onPressed: () {
+                  //     //     ref
+                  //     //         .read(controllerNewsProvider.notifier)
+                  //     //         .removeItem(index);
+                  //     //   },
+                  //     // ),
+                  //     newsItem(data.articles[index]),
+                  //   ],
+                  // );
                 }),
               ),
-              error: (error, stackTrace) => Text("Error"),
-              loading: () => Container(
-                height: MediaQuery.of(context).size.height,
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
+              error: (error, stackTrace) => SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: const Center(child: Text("Error"))),
+              loading: () {
+                print("Loading");
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
             ),
             Center(
               child: InkWell(
-                  onTap: (() => ref.refresh(newsStateNotifierProvider)),
-                  child: Text("MainScreen")),
+                  onTap: (() =>
+                      ref.read(controllerNewsProvider.notifier).getData()),
+                  child: const Text("MainScreen")),
             ),
           ],
         ),
@@ -44,23 +68,22 @@ class MainScreen extends ConsumerWidget {
     );
   }
 
-  Widget NewsItem(Article item) {
+  Widget newsItem(Article item) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: InkWell(
-        onTap: (() => print(item.source!.name!)),
+        onTap: (() => debugPrint(item.source.name)),
         child: Container(
-          padding: EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(15.0),
           decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
           child: Center(
             child: Row(
               children: [
                 Expanded(
-                    child: Container(
-                        child: Text(
-                  item.title!,
+                    child: Text(
+                  item.title,
                   textAlign: TextAlign.right,
-                ))),
+                )),
               ],
             ),
           ),

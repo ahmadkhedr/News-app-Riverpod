@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:news_riverpod_app/Providers/NewsProvider.dart';
 
 import 'PresentationLayer/Screens/MainScreen.dart';
 
 void main() {
-  runApp(ProviderScope(child: MyApp()));
+  final container = ProviderContainer();
+  //container.read(controllerNewsProvider.notifier).getNews();
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -18,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainScreen(),
+      home: const MainScreen(),
     );
   }
 }
