@@ -8,37 +8,27 @@ import '../DataLayer/Models/NewsModel.dart';
 import '../DataLayer/WebServices/NewsWebService.dart';
 part 'NewsProvider.g.dart';
 
-// class NewsProvider extends StateNotifier<AsyncValue<NewsModel>> {
-//   NewsProvider(this.newsRepository) : super(const AsyncValue.loading()) {
-//     getNews();
-//     print("HIII22222I");
-//   }
-
-//   NewsRepository newsRepository;
-//   bool isLoading = false;
-
-//   Future<void> getNews() async {
-//     print("HIIII");
-//     try {
-//       var data = await newsRepository.getNews();
-//       state = AsyncValue.data(data);
-//     } on Exception catch (e) {
-//       state = AsyncValue.error(e, StackTrace.current);
-//     }
-//   }
-// }
-
 @riverpod
 class ControllerNews extends _$ControllerNews {
+  List<Article> articlesList = [];
   @override
-  FutureOr<NewsModel> build() {
-    return getData();
+  List<Article> build() {
+    final dataPro = ref.watch(getNewsProvider);
+
+    dataPro.whenOrNull(
+      data: (data) {
+        for (int i = 0; i < data.articles.length; i++) {
+          articlesList.add(data.articles[i]);
+        }
+      },
+      error: (error, stackTrace) => articlesList = [],
+      loading: () => null,
+    );
+    return articlesList;
   }
 
-
-  Future<NewsModel> getData() async {
-     var newsRepo = ref.watch(newsRepositoryProvider);
-    return await newsRepo.getNews();
+  removeItem(Article item) {
+    articlesList.remove(item);
   }
 }
 
@@ -55,10 +45,11 @@ NewsRepository newsRepository(NewsRepositoryRef ref) {
   return NewsRepository(newsWS);
 }
 
-// @riverpod
-// Future<NewsModel> getNews(GetNewsRef ref) async {
-//   print("Hi");
-//   var newsRepo = ref.read(newsRepositoryProvider);
-//   var data = await newsRepo.getNews();
-//   return data;
-// }
+@riverpod
+Future<NewsModel> getNews(GetNewsRef ref) async {
+  print("Hi");
+  var newsRepo = ref.watch(newsRepositoryProvider);
+  List<Article> articlesList;
+  var data = await newsRepo.getNews();
+  return data;
+}

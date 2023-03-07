@@ -6,7 +6,7 @@ import 'PresentationLayer/Screens/MainScreen.dart';
 
 void main() {
   final container = ProviderContainer();
-  //container.read(controllerNewsProvider.notifier).getNews();
+  container.read(getNewsProvider);
   runApp(const ProviderScope(child: MyApp()));
 }
 

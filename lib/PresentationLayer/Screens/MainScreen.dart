@@ -9,11 +9,9 @@ class MainScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    AsyncValue<NewsModel> data = ref.watch(controllerNewsProvider);
-    // ref.listen(controllerNewsProvider, (prev, next) {
-    //   ScaffoldMessenger.of(context)
-    //       .showSnackBar(const SnackBar(content: Text('yoyo')));
-    // });
+    AsyncValue<NewsModel> data = ref.watch(getNewsProvider);
+    List<Article> dataList = ref.watch(controllerNewsProvider);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -22,25 +20,35 @@ class MainScreen extends ConsumerWidget {
           children: [
             data.when(
               data: (data) => ListView.builder(
-                itemCount: data.articles.length,
+                itemCount: dataList.length,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: ((context, index) {
-                  return newsItem(data.articles[index]);
-
-                  //  Row(
-                  //   children: [
-                  //     // IconButton(
-                  //     //   icon: const Icon(Icons.remove),
-                  //     //   onPressed: () {
-                  //     //     ref
-                  //     //         .read(controllerNewsProvider.notifier)
-                  //     //         .removeItem(index);
-                  //     //   },
-                  //     // ),
-                  //     newsItem(data.articles[index]),
-                  //   ],
-                  // );
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(15.0),
+                      decoration:
+                          BoxDecoration(border: Border.all(color: Colors.grey)),
+                      child: Center(
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed: () => ref
+                                  .read(controllerNewsProvider.notifier)
+                                  .removeItem(dataList[index]),
+                            ),
+                            Expanded(
+                                child: Text(
+                              dataList[index].title,
+                              textAlign: TextAlign.right,
+                            )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
                 }),
               ),
               error: (error, stackTrace) => SizedBox(
@@ -58,8 +66,7 @@ class MainScreen extends ConsumerWidget {
             ),
             Center(
               child: InkWell(
-                  onTap: (() =>
-                      ref.read(controllerNewsProvider.notifier).getData()),
+                  onTap: (() => ref.read(getNewsProvider)),
                   child: const Text("MainScreen")),
             ),
           ],
@@ -68,7 +75,7 @@ class MainScreen extends ConsumerWidget {
     );
   }
 
-  Widget newsItem(Article item) {
+  Widget newsItem(Article item, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: InkWell(
@@ -79,6 +86,12 @@ class MainScreen extends ConsumerWidget {
           child: Center(
             child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: () => ref
+                      .read(controllerNewsProvider.notifier)
+                      .removeItem(item),
+                ),
                 Expanded(
                     child: Text(
                   item.title,
